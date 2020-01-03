@@ -1,0 +1,9 @@
+# bysrkh
+# @2020 GNU GPL v2, Yogyakarta
+# bysrkh@gmail.com
+
+# Jetbrains
+.idea
+
+# NPM Local Dependency Directory
+node_modules

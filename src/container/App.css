@@ -1,0 +1,21 @@
+/**
+ * bysrkh
+ * @2019 GNU GPL v2, Jogja - Indonesia
+ *
+ * bysrkh@gmail.com
+ */
+
+/* define body style properties */
+html {
+    min-height: 100%;
+    height: 100%;
+}
+
+input:invalid {
+    background: red;
+}
+
+body {
+    height: inherit;
+    background: rgb(240, 248, 255);
+}
