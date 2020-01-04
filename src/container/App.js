@@ -7,18 +7,19 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {BrowserRouter, Switch, Route, Link, withRouter} from 'react-router-dom'
-import {combineReducers, createStore, applyMiddleware} from 'redux'
+import {BrowserRouter, Link, Route, Switch} from 'react-router-dom'
+import {combineReducers, createStore} from 'redux'
 import {Provider} from 'react-redux'
 
 import TodoMain from "../component/todo/TodoMain";
-import TodoCreate from '../component/todo/create/TodoCreate'
 import ErrorNotFound from "../component/error/ErrorNotFound";
 import '../favicon.png'
 
 import todoReducer from "../redux/TodoReducer";
 import './App.css'
 import Nav from "../component/util/Nav";
+import AboutPage from "../component/about/AboutPage";
+import ContactPage from "../component/contact/ContactPage";
 
 const store = createStore(combineReducers({todoReducer}))
 
@@ -45,7 +46,8 @@ const App = props => {
                     <div className="offset-sm-3 col-sm-6">
                         <div>
                             <Switch>
-                                <Route path="/about" component={TodoCreate}/>
+                                <Route path="/contact" component={ContactPage}/>
+                                <Route path="/about" component={AboutPage}/>
                                 <Route exact path="/" component={TodoMain}/>
                                 <Route component={ErrorNotFound}/>
                             </Switch>
