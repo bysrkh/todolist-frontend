@@ -10,6 +10,8 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 
 import {fireClearDeleteTodo, fireDeleteTodo, fireGetTodoList} from "../../../redux/TodoAction";
+import withErrorhandler from "../../../utils/withErrorhandler";
+
 import TodoRow from "./TodoRow";
 
 class TodoList extends Component {
@@ -17,28 +19,27 @@ class TodoList extends Component {
     constructor(props) {
         super(props)
 
-        this.invokeFireDeleteTodo = this.invokeFireDeleteTodo.bind(this)
 
-        console.log('[TodoList.js] constructor() is initiating')
+        console.log('[TodoList.js] constructor()')
+
+        this.invokeFireDeleteTodo = this.invokeFireDeleteTodo.bind(this)
     }
 
 
     render() {
-        console.log('[TodoList.js] render() is rendering')
-
-        if (!this.props.todoList) {
-            return (<p>no data</p>)
-        }
+        console.log('[TodoList.js] render()')
 
         return (
-            <div>
-                {this.props.todoList.map(todo => (<TodoRow {...todo}
-                                                           key={todo.id}
-                                                           onDelete={this.invokeFireDeleteTodo}/>))
-                }
-            </div>
+            <>
+                {this.props.todoList.map(todo =>
+                    (<TodoRow {...todo}
+                              key={todo.id}
+                              onDelete={this.invokeFireDeleteTodo}/>)
+                )}
+            </>
         )
     }
+
 
     componentDidMount() {
         console.log('[TodoList.js] componentDidMount()')
@@ -46,8 +47,10 @@ class TodoList extends Component {
         this.props.invokeFireOnGetTodoList()
     }
 
+
     shouldComponentUpdate(nextProps) {
         console.log('[TodoList.js] shouldComponentUpdate()')
+
 
         return (nextProps.todoDelete.message !== '' ||
             JSON.stringify(this.props.todoList) !== JSON.stringify(nextProps.todoList)
@@ -70,7 +73,7 @@ class TodoList extends Component {
 }
 
 const mapStateToProps = state => ({
-    todoList: [...state.todoReducer.todoList],
+    todoList: state.todoReducer.todoList,
     todoDelete: {...state.todoReducer.todoDelete}
 })
 
@@ -80,4 +83,4 @@ const mapDispatchToProps = dispatch => ({
     invokeFireDeleteTodo: (id) => fireDeleteTodo(dispatch, id)
 })
 
-export default connect(mapStateToProps, mapDispatchToProps) (withRouter(TodoList))
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withErrorhandler(TodoList)))

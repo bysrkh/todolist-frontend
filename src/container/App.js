@@ -25,34 +25,35 @@ const store = createStore(combineReducers({todoReducer}))
 const App = props => {
 
     return (
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="offset-sm-3 col-sm-6">
-                        <div className="navbar navbar-expand">
-                            <Link className="navbar-brand" to="/">Todo</Link>
-                            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
-                                <span className="navbar-toggler-icon"></span>
-                            </button>
-                            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                                <ul className="navbar-nav">
-                                    <Nav link={{label: 'Home', path: '/'}}/>
-                                    <Nav link={{label: 'About', path: '/about'}}/>
-                                    <Nav link={{label: 'Contact', path: '/contact'}}/>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="offset-sm-3 col-sm-6">
-                        <div>
-                            <Switch>
-                                <Route path="/about" component={TodoCreate}/>
-                                <Route exact path="/" component={TodoMain}/>
-                                <Route component={ErrorNotFound}/>
-                            </Switch>
+        <div className="container-fluid">
+            <div className="row">
+                <div className="offset-sm-3 col-sm-6">
+                    <div className="navbar navbar-expand">
+                        <Link className="navbar-brand" to="/">Todo</Link>
+                        <button className="navbar-toggler" type="button" data-toggle="collapse"
+                                data-target="#navbarSupportedContent">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul className="navbar-nav">
+                                <Nav link={{label: 'Home', path: '/'}}/>
+                                <Nav link={{label: 'About', path: '/about'}}/>
+                                <Nav link={{label: 'Contact', path: '/contact'}}/>
+                            </ul>
                         </div>
                     </div>
                 </div>
+                <div className="offset-sm-3 col-sm-6">
+                    <div>
+                        <Switch>
+                            <Route path="/about" component={TodoCreate}/>
+                            <Route exact path="/" component={TodoMain}/>
+                            <Route component={ErrorNotFound}/>
+                        </Switch>
+                    </div>
+                </div>
             </div>
+        </div>
     )
 }
 
