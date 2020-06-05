@@ -10,6 +10,9 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 
 import {fireClearDeleteTodo, fireDeleteTodo, fireGetTodoList} from "../../../redux/TodoAction";
+import fireLoading from "../../../redux/loadingAction";
+import withErrorhandler from "../../../utils/withErrorhandler";
+
 import TodoRow from "./TodoRow";
 
 class TodoList extends Component {
@@ -17,46 +20,52 @@ class TodoList extends Component {
     constructor(props) {
         super(props)
 
-        this.invokeFireDeleteTodo = this.invokeFireDeleteTodo.bind(this)
+        console.log('[TodoList.js] constructor()')
 
-        console.log('[TodoList.js] constructor() is initiating')
+        this.invokeFireDeleteTodo = this.invokeFireDeleteTodo.bind(this)
     }
 
 
     render() {
-        console.log('[TodoList.js] render() is rendering')
+        console.log('[TodoList.js] render()')
 
-        if (!this.props.todoList) {
-            return (<p>no data</p>)
-        }
+        if (!this.props.todoList.data)
+            return <p>no data</p>
 
         return (
-            <div>
-                {this.props.todoList.map(todo => (<TodoRow {...todo}
-                                                           key={todo.id}
-                                                           onDelete={this.invokeFireDeleteTodo}/>))
-                }
-            </div>
+            <>
+                {this.props.todoList.data.map(todo =>
+                    (<TodoRow {...todo}
+                              key={todo.id}
+                              onDelete={this.invokeFireDeleteTodo}/>)
+                )}
+            </>
         )
     }
+
 
     componentDidMount() {
         console.log('[TodoList.js] componentDidMount()')
 
+        this.props.invokeFireOnLoading(true)
         this.props.invokeFireOnGetTodoList()
     }
+
 
     shouldComponentUpdate(nextProps) {
         console.log('[TodoList.js] shouldComponentUpdate()')
 
         return (nextProps.todoDelete.message !== '' ||
-            JSON.stringify(this.props.todoList) !== JSON.stringify(nextProps.todoList)
-        )
+            JSON.stringify(this.props.todoList) !== JSON.stringify(nextProps.todoList))
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         console.log('[TodoList.js] componentDidUpdate()')
 
+        this.props.invokeFireOnLoading(false)
+
+        if (this.props.todoList.error)
+            throw this.props.todoList.error
         if (this.props.todoDelete.message !== '') {
             this.props.invokeFireClearDeleteTodo()
             this.props.invokeFireOnGetTodoList()
@@ -70,14 +79,15 @@ class TodoList extends Component {
 }
 
 const mapStateToProps = state => ({
-    todoList: [...state.todoReducer.todoList],
+    todoList: state.todoReducer.todoList,
     todoDelete: {...state.todoReducer.todoDelete}
 })
 
 const mapDispatchToProps = dispatch => ({
     invokeFireOnGetTodoList: () => fireGetTodoList(dispatch),
+    invokeFireOnLoading: (loading) => fireLoading(dispatch, loading),
     invokeFireClearDeleteTodo: () => fireClearDeleteTodo(dispatch),
     invokeFireDeleteTodo: (id) => fireDeleteTodo(dispatch, id)
 })
 
-export default connect(mapStateToProps, mapDispatchToProps) (withRouter(TodoList))
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withErrorhandler(TodoList)))

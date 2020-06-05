@@ -7,6 +7,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {fireCreateTodo, fireGetTodoList} from "../../../redux/TodoAction";
+import http from '../../../utils/httpUtil'
 
 class TodoCreate extends Component {
 
@@ -17,7 +18,10 @@ class TodoCreate extends Component {
         this.invokeFireCreateTodo = this.invokeFireCreateTodo.bind(this)
         this.invokeFireCancelTodo = this.invokeFireCancelTodo.bind(this)
 
-        this.state = {title: '', description: ''}
+        this.state = {
+            title: {value: '', validClass: ''},
+            reminderDate: {value: '', validClass: ''}
+        }
     }
 
     render() {
@@ -29,20 +33,15 @@ class TodoCreate extends Component {
                 <div className="form-group col-md-12">
                     <label htmlFor="title">Title</label>
                     <input id="title"
-                           className="form-control"
+                           className={"form-control " + this.state.title.validClass}
                            type="text"
                            name="title"
-                           value={this.state.title}
+                           value={this.state.title.value}
                            onChange={this.invokeFireChangeTodo}/>
+                        <div className="invalid-feedback">
+                            wrong input
+                        </div>
                     </div>
-                <div className="form-group col-md-12">
-                    <label htmlFor="description">Description</label>
-                    <textarea id="description"
-                              className="form-control"
-                              name="description"
-                              value={this.state.description}
-                              onChange={this.invokeFireChangeTodo}/>
-                </div>
                   <div className="form-group col-md-12">
                      <button id="create" className="btn btn-primary" type="submit">Submit</button>
                      <button id="cancel"
@@ -56,13 +55,11 @@ class TodoCreate extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log('[TodoUpdate.js] componentDidUpdate()')
-        console.log(prevProps.todoCreate.message)
-        console.log(this.props.todoCreate.message)
+        console.log('[TodoCreate.js] componentDidUpdate()')
 
-        if (prevProps.todoCreate.message !== this.props.todoCreate.message) {
+        if (this.props.todoCreate.status === 200) {
             this.props.toggleButton()
-            this.props.invokeFireGetTodoList()
+            this.props.invokeFireGetTodoList(http)
         }
 
     }
@@ -70,9 +67,16 @@ class TodoCreate extends Component {
     invokeFireChangeTodo(event) {
         event.preventDefault()
 
+        let validClass = ''
+
+        validClass = event.target.name === 'title' && event.target.value.trim() !== '' ? 'is-valid': 'is-invalid'
+
         this.setState({
             ...this.state,
-            [event.target.name]: event.target.value
+            [event.target.name]: {
+                value: event.target.value,
+                validClass: validClass
+            }
         })
     }
 
@@ -96,7 +100,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     invokeFireCreateTodo: (data) => fireCreateTodo(dispatch, data),
-    invokeFireGetTodoList: () => fireGetTodoList(dispatch)
+    invokeFireGetTodoList: (http) => fireGetTodoList(dispatch, http)
 })
 
 export default connect(mapStateToProps, mapDispatchToProps) (TodoCreate)
