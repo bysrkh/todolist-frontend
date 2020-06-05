@@ -10,6 +10,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 
 import {fireClearDeleteTodo, fireDeleteTodo, fireGetTodoList} from "../../../redux/TodoAction";
+import fireLoading from "../../../redux/loadingAction";
 import withErrorhandler from "../../../utils/withErrorhandler";
 
 import TodoRow from "./TodoRow";
@@ -18,7 +19,6 @@ class TodoList extends Component {
 
     constructor(props) {
         super(props)
-
 
         console.log('[TodoList.js] constructor()')
 
@@ -29,9 +29,12 @@ class TodoList extends Component {
     render() {
         console.log('[TodoList.js] render()')
 
+        if (!this.props.todoList.data)
+            return <p>no data</p>
+
         return (
             <>
-                {this.props.todoList.map(todo =>
+                {this.props.todoList.data.map(todo =>
                     (<TodoRow {...todo}
                               key={todo.id}
                               onDelete={this.invokeFireDeleteTodo}/>)
@@ -44,6 +47,7 @@ class TodoList extends Component {
     componentDidMount() {
         console.log('[TodoList.js] componentDidMount()')
 
+        this.props.invokeFireOnLoading(true)
         this.props.invokeFireOnGetTodoList()
     }
 
@@ -51,15 +55,17 @@ class TodoList extends Component {
     shouldComponentUpdate(nextProps) {
         console.log('[TodoList.js] shouldComponentUpdate()')
 
-
         return (nextProps.todoDelete.message !== '' ||
-            JSON.stringify(this.props.todoList) !== JSON.stringify(nextProps.todoList)
-        )
+            JSON.stringify(this.props.todoList) !== JSON.stringify(nextProps.todoList))
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         console.log('[TodoList.js] componentDidUpdate()')
 
+        this.props.invokeFireOnLoading(false)
+
+        if (this.props.todoList.error)
+            throw this.props.todoList.error
         if (this.props.todoDelete.message !== '') {
             this.props.invokeFireClearDeleteTodo()
             this.props.invokeFireOnGetTodoList()
@@ -79,6 +85,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     invokeFireOnGetTodoList: () => fireGetTodoList(dispatch),
+    invokeFireOnLoading: (loading) => fireLoading(dispatch, loading),
     invokeFireClearDeleteTodo: () => fireClearDeleteTodo(dispatch),
     invokeFireDeleteTodo: (id) => fireDeleteTodo(dispatch, id)
 })

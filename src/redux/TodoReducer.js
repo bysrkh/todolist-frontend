@@ -5,7 +5,7 @@
  * bysrkh@gmail.com
  */
 
-const initialState = {todoList: [], todoCreate: {message: ''}, todoDelete: {message: ''}, todoUpdate: {message: ''}}
+const initialState = {todoList: [], todoCreate: {message: ''}, todoDelete: {message: ''}, todoUpdate: {message: ''}, error: {}, loading: false }
 
 const todoReducer = (state = initialState, action) => {
     console.log(`action type : ${action.type} and data: ${JSON.stringify(action.data)}`)
@@ -14,7 +14,10 @@ const todoReducer = (state = initialState, action) => {
         case 'TODO_LIST':
             return {
                 ...state,
-                todoList: action.data ? [...action.data] : [...state.todoList]
+                todoList: {
+                    data: action.data ? [...action.data] : [...state.todoList],
+                    error: action.error ? {...action.error}: state.error
+                }
             }
         case 'TODO_CREATE':
             return {
@@ -30,6 +33,11 @@ const todoReducer = (state = initialState, action) => {
             return {
                 ...state,
                 todoDelete: action.data? {...action.data} : {...state.todoDelete}
+            }
+        case 'LOADING':
+            return {
+                ...state,
+                loading: action.data ? action.data: state.loading
             }
         default:
             return {...state}

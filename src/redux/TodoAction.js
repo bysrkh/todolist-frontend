@@ -7,15 +7,16 @@
 
 import axios from 'axios'
 
-const getTodoList = (todoList) => ({
+const getTodoList = (todoList, error) => ({
     type: 'TODO_LIST',
-    data: [...todoList]
+    data: [...todoList],
+    error: error
 })
 
 const fireGetTodoList = (dispatch) => (
     axios.get('http://localhost:8080/api/todo/')
-        .then(response =>  dispatch(getTodoList([...response.data])))
-            .catch(error => {throw error})
+        .then((response, error) => dispatch(getTodoList([...response.data])))
+        .catch(error => dispatch(getTodoList([], error)))
 )
 
 const createTodo = (todoCreate) => ({
@@ -27,7 +28,9 @@ const createTodo = (todoCreate) => ({
 const fireCreateTodo = (dispatch, data) => (
     axios.post('http://localhost:8080/api/todo/', {...data})
         .then(response => dispatch(createTodo({...response.data})))
-        .catch(error => {throw error} )
+        .catch(error => {
+            throw error
+        })
 )
 
 const updateTodo = (updateTodo) => ({
@@ -37,8 +40,13 @@ const updateTodo = (updateTodo) => ({
 
 const fireUpdateTodo = (dispatch, data) => (
     axios.put('http://localhost:8080/api/todo/', {...data})
-        .then(response => {console.log(JSON.stringify(response.data)); dispatch(updateTodo({...response.data}))})
-        .catch(error => {throw error} )
+        .then(response => {
+            console.log(JSON.stringify(response.data));
+            dispatch(updateTodo({...response.data}))
+        })
+        .catch(error => {
+            throw error
+        })
 )
 
 const fireClearUpdateTodo = (dispatch) => dispatch(updateTodo({message: ''}))
@@ -49,9 +57,11 @@ const deleteTodo = (todoDelete) => ({
 })
 
 const fireDeleteTodo = (dispatch, data) => (
-    axios.delete(`http://localhost:8080/api/todo/${data}`, )
+    axios.delete(`http://localhost:8080/api/todo/${data}`,)
         .then(response => dispatch(deleteTodo({...response.data})))
-        .catch(error => {throw error} )
+        .catch(error => {
+            throw error
+        })
 )
 
 const fireClearDeleteTodo = (dispatch) => dispatch(deleteTodo({message: ''}))
